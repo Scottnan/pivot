@@ -9,13 +9,15 @@ from libcpp.map cimport map
 import numba
 
 
-cdef void build_doublemap(map[pair[float, float], float] m, np.ndarray[np.float32_t, ndim=2] data) nogil:
+cdef void build_doublemap(map[pair[float, float], float] m, float[:, :] data):
     cdef int orgrows
+    cdef Py_ssize_t i
     orgrows = data.shape[0]
-    for i in prange(orgrows):
-        p1 = (data[i, 0], data[i, 1])
-        p2 = (p1, data[i, 2])
-        m.insert(p2)
+    for i in range(orgrows):
+        # cdef pair[float, float] p1(data[i, 0], data[i, 1])
+        # cdef pair[float, float] p2(p1, data[i, 2])
+        # p2 = (p1, data[i, 2])
+        m.insert(((data[i, 0], data[i, 1]), data[i, 2]))
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
